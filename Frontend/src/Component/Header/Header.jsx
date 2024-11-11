@@ -7,7 +7,7 @@ import HeaderSideNav from './HeaderSideNav';
 
 const items = [
     {title: "Rooms", url: "/room"},
-    {title: "Students", url: "/studentdash"},
+    {title: "Students", url: "/student-dash"},
 ]
 
 

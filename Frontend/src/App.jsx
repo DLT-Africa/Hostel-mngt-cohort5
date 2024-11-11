@@ -8,6 +8,7 @@ import Login from "./Component/Register/Login";
 import Layout from "./Component/Layout/Layout";
 import HomeDash from "./Component/Dashboard/HomeDash";
 import StudentDashboard from "./Component/Dashboard/StudentDashboard";
+import Rooms from "./Component/Dashboard/Rooms";
 
 function App() {
   const renderRoute = () => (
@@ -33,6 +34,12 @@ function App() {
       />
 
       <Route path="/student-dash" element={<StudentDashboard />} />
+      <Route
+        path="/room"
+        element={
+            <Rooms />
+        }
+      />
     </Routes>
   );
 
