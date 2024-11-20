@@ -5,10 +5,7 @@ const errorHandler = require("./middleware/errormiddleware")
 const express = require("express");
 const cors = require("cors")
 const app  = express();
-
-
-
-
+const adminRoutes = require("./routes/adminRoutes")
 
 const PORT = 5000;
 
@@ -19,6 +16,8 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin");
     next()
 })
+
+app.use("/admin", adminRoutes);
 
 app.use(cors({
 

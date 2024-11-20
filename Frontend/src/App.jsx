@@ -34,12 +34,7 @@ function App() {
       />
 
       <Route path="/student-dash" element={<StudentDashboard />} />
-      <Route
-        path="/room"
-        element={
-            <Rooms />
-        }
-      />
+      <Route path="/room" element={<Rooms />} />
     </Routes>
   );
 
