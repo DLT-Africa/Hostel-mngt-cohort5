@@ -101,10 +101,9 @@ const login = asyncHandler(async (req, res) => {
 
 const getAdmin = asyncHandler(async (req, res) => {
   try {
+    const { adminId, name } = req.params;
 
-    const { adminId , name } = req.params
-
-    console.log(req.params)
+    console.log(req.params);
 
     // console.log("req admin id =", req.adminId)
 
@@ -122,7 +121,6 @@ const getAdmin = asyncHandler(async (req, res) => {
       });
     } else {
       res.status(404).json({ message: "Admin not found" });
-
     }
   } catch (error) {
     console.error(error);
@@ -141,7 +139,6 @@ const getAdmins = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "No admin found" });
     }
 
-
     res.status(200).json(admins);
   } catch (error) {
     console.error(error);
@@ -150,7 +147,7 @@ const getAdmins = asyncHandler(async (req, res) => {
 });
 
 const updateAdmin = asyncHandler(async (req, res) => {
-  const {adminId} = req.params;
+  const { adminId } = req.params;
   const { role } = req.body;
   try {
     const admin = await AdminModel.findById(adminId);
@@ -170,46 +167,45 @@ const updateAdmin = asyncHandler(async (req, res) => {
 // delete admin
 
 const deleteAdmin = asyncHandler(async (req, res) => {
-    try {
+  try {
+    const { adminId } = req.params;
 
-        const {adminId} = req.params;
+    const admin = await AdminModel.findById(adminId);
 
-        const admin = await AdminModel.findById(adminId);
-
-        if(!admin) {
-           res.status(404)
-           throw new Error("Admin not found");
-        }
-
-        await admin.deleteOne();
-
-        res.status(200).json({message: "Admin deleted succesfully"});
-        
-    } catch (error) {
-
-        console.error(error.message);
-        res.status(500).json({errorMessage: error.message});
-        
+    if (!admin) {
+      res.status(404);
+      throw new Error("Admin not found");
     }
-});
 
+    await admin.deleteOne();
+
+    res.status(200).json({ message: "Admin deleted succesfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ errorMessage: error.message });
+  }
+});
 
 // logout Admin
 
-const adminLogout = asyncHandler(async( req, res) => {
-    res.cookie("token", "", {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(0),
-        sameSite: "none",
-        secure: true
-    });
+const adminLogout = asyncHandler(async (req, res) => {
+  res.cookie("token", "", {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(0),
+    sameSite: "none",
+    secure: true,
+  });
 
-    res.status(200).json({message: "Logout successful"})
-})
+  res.status(200).json({ message: "Logout successful" });
+});
 
-
-
-
-
-module.exports = { register, login, getAdmin, getAdmins, updateAdmin, deleteAdmin, adminLogout };
+module.exports = {
+  register,
+  login,
+  getAdmin,
+  getAdmins,
+  updateAdmin,
+  deleteAdmin,
+  adminLogout,
+};
