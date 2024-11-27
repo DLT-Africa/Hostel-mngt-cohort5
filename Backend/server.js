@@ -6,6 +6,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const adminRoutes = require("./routes/adminRoutes");
+const roomRoutes = require("./routes/roomRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 const cookieParser = require("cookie-parser");
 
 const PORT = 5000;
@@ -20,6 +22,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/admin", adminRoutes);
+app.use("/room", roomRoutes);
+app.use("/student", studentRoutes);
 
 app.use(
   cors({
