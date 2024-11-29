@@ -121,6 +121,7 @@ const getStudent = asyncHandler(async (req, res) => {
 });
 
 const updateStudentProfile = asyncHandler(async (req, res) => {
+    console.log("Update Student Profile is running")
   try {
     const studentId = req.params.studentId;
     console.log({ studentId });
@@ -145,6 +146,8 @@ const updateStudentProfile = asyncHandler(async (req, res) => {
 });
 
 const changeStudentRoom = asyncHandler(async (req, res) => {
+    console.log("Change Student Room is running")
+
   const { studentId, newRoomNum } = req.body;
   try {
     const student = await Student.findById(studentId);
