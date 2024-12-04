@@ -26,8 +26,7 @@ const register = asyncHandler(async (req, res) => {
     //check if the admin already exists
     const adminExists = await AdminModel.findOne({ email });
     if (adminExists) {
-      res.status(400);
-      throw new Error("Email already exists");
+      return res.status(400).json({message: "Email already exists"});;
     }
 
     // create a new admin in the database
@@ -58,7 +57,9 @@ const register = asyncHandler(async (req, res) => {
   }
 });
 
+
 //Admin login
+
 const login = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;

@@ -13,17 +13,13 @@ const cookieParser = require("cookie-parser");
 const PORT = 5000;
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true}));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin");
+  res.header("Access-Control-Allow-Origin", "*");
   next();
 });
-
-app.use("/admin", adminRoutes);
-app.use("/room", roomRoutes);
-app.use("/student", studentRoutes);
 
 app.use(
   cors({
@@ -33,6 +29,11 @@ app.use(
     methods: "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS",
   })
 );
+
+app.use("/admin", adminRoutes);
+app.use("/room", roomRoutes);
+app.use("/student", studentRoutes);
+
 
 
 app.get("/", (req, res) => console.log("Hello Teady!"));

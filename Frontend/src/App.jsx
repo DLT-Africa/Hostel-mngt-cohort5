@@ -23,7 +23,7 @@ function App() {
           </Layout>
         }
       />
-      <Route path="/adminprev" element={<AdminPreview />} />
+      <Route path="/adminprev" element={<AdminPreview surnam="soliu" />} />
       <Route
         path="/home-dash"
         element={
