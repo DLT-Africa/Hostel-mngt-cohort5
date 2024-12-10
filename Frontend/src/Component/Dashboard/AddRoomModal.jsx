@@ -32,6 +32,7 @@ const AddRoomModal = ({onAddRoom, onClose}) => {
         } catch (error) {
             setError("Failed to add room", error);
             console.log(error)
+            
         }finally {
             setIsSubmitting(false)
         }

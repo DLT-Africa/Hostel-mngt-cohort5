@@ -1,12 +1,16 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const UpdateStudentProfile = ({ student, onClose, updateFilteredData }) => {
   const [formData, setFormData] = useState({
-    name: student.studentName,
+    name: student.name,
     age: student.age,
     nationality: student.nationality,
-    g_name: student.guardianName,
-    g_email: student.guardianEmail,
+    g_name: student.guardian.guardianName,
+    g_email: student.guardian.guardianEmail,
   });
 
   /*
@@ -25,32 +29,53 @@ const UpdateStudentProfile = ({ student, onClose, updateFilteredData }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =  async (e) => {
     e.preventDefault();
 
-    updateFilteredData((prev) => {
-    //   const otherStudents = prev.filter(
-    //     (allStudent) => allStudent.id !== student.id
+    // updateFilteredData((prev) => {
+    // //   const otherStudents = prev.filter(
+    // //     (allStudent) => allStudent.id !== student.id
+    // //   );
+    //   const currentStudentIndex = prev.findIndex(
+    //     (allStudent) => allStudent.id === student.id
     //   );
-      const currentStudentIndex = prev.findIndex(
-        (allStudent) => allStudent.id === student.id
-      );
-      const updatedStudent = {
-        id: student.id,
-        email: student.email,
-        gender: student.gender,
-        age: formData.age,
-        nationality: formData.nationality,
-        guardianName: formData.g_name,
-        guardianEmail: formData.g_email,
-        studentName: formData.name,
-      };
-      const allStudents = [...prev]
-      allStudents[currentStudentIndex] = updatedStudent
-      return allStudents;
-    });
+    //   const updatedStudent = {
+    //     id: student.id,
+    //     email: student.email,
+    //     gender: student.gender,
+    //     age: formData.age,
+    //     nationality: formData.nationality,
+    //     guardianName: formData.g_name,
+    //     guardianEmail: formData.g_email,
+    //     studentName: formData.name,
+    //   };
+    //   const allStudents = [...prev]
+    //   allStudents[currentStudentIndex] = updatedStudent
+    //   return allStudents;
+    // });
+    
+    try {
 
-    onClose();
+
+      console.log("FormData", formData)
+
+      const response = await axios.
+      patch(`${BASE_URL}/student/${student._id}`, formData, {withCredentials: true});
+
+      if(response.data) {
+
+        updateFilteredData((prevData) => [response.data, ...prevData])
+        toast.success("Update successful")
+        onClose()
+      }
+
+      
+    } catch (error) {
+      console.log("Error updating profile", error);
+      toast.error("Error updating the profile")
+      
+    }
+    
   };
 
   return (

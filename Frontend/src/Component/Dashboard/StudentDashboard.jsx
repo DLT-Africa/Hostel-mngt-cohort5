@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { confirmAlert } from "react-confirm-alert";
 import SideBar from "./SideBar";
 import { IoMenu, IoCloseOutline } from "react-icons/io5";
@@ -9,75 +9,76 @@ import "./Dashboard.css";
 import UpdateStudentProfile from "../Modal/UpdateStudentProfile";
 import ChangeStudentRoom from "../Modal/ChangeStudentRoom";
 import UpdateCheckin from "../Modal/UpdateCheckin";
+import { ClipLoader } from "react-spinners";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const studentData = [
-  {
-    id: 1,
-    studentName: "Buprenorphine hydrochloride",
-    email: "vdysart0@aol.com",
-    gender: "Female",
-    age: "4",
-    nationality: "Russia",
-    guardianName: "Elon Musk",
-    guardianEmail: "elonmusk@abc.com",
-  },
-  {
-    id: 2,
-    studentName: "Benzalkonium Chloride",
-    email: "xandreutti1@psu.edu",
-    gender: "Male",
-    age: "11",
-    nationality: "South Sudan",
-    guardianName: "Elon Michael",
-    guardianEmail: "elonmike@abc.com",
-  },
-  {
-    id: 3,
-    studentName: "Methylphenidate Hydrochloride",
-    email: "echallicum2@nytimes.com",
-    gender: "Female",
-    age: "26",
-    nationality: "China",
-    guardianName: "Mike Musk",
-    guardianEmail: "mikemusk@abc.com",
-  },
-];
+const override = {
+  display: "block",
+  margin: "100px auto",
+};
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const StudentDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [students, setStudents] = useState(studentData);
-  const [filteredData, updateFilteredData] = useState(studentData);
+  const [filteredData, setFilteredData] = useState([]);
   const [isSideBarToggled, setIsSideBarToggled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModal, setSelectedmodal] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [currentRoomNumber, setCurrentRoomNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleSearchChange = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/student`, {
+          withCredentials: true,
+        });
+        const data = response.data;
+        setFilteredData(data);
+        console.log({ data });
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to fetch students");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStudents();
+  }, []); // filteredData
 
-    const filtered = students.filter(
-      (student) =>
-        student.studentName.toLowerCase().includes(term) ||
-        student.email.toLowerCase().includes(term) ||
-        student.nationality.toLowerCase().includes(term)
-    );
-    updateFilteredData(filtered);
-  };
+  const filtered = filteredData?.filter(
+    (student) =>
+      student?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      student.nationality.toLowerCase().includes(searchTerm?.toLowerCase())
+  );
 
-  const handleDelete = (studentId) => {
-    const updatedUsers = students.filter((student) => student.id !== studentId);
-    setStudents(updatedUsers);
-
-    const updatedFilteredData = filteredData.filter(
-      (student) => student.id !== studentId
-    );
-
-    updateFilteredData(updatedFilteredData);
+  const handleDelete = async (studentId) => {
+    try {
+      const res = await axios.delete(
+        `${BASE_URL}/student/delete/${studentId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      toast.success(res?.data);
+      const updatedFilteredData = filteredData.filter(
+        (student) => student._id !== studentId
+      );
+      setFilteredData(updatedFilteredData);
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.msg);
+    }
   };
 
   const handleModalOpen = (students) => {
     setSelectedStudent(students);
+    setCurrentRoomNumber(students?.room?.roomNumber);
     setIsModalOpen(true);
   };
 
@@ -114,6 +115,13 @@ const StudentDashboard = () => {
   //   item.email.toLowerCase().includes(search.toLowerCase())
   // );
 
+  if (isLoading)
+    return (
+      <ClipLoader color="#3a86ff" cssOverride={override} loading={isLoading} />
+    );
+
+  console.log(selectedStudent);
+
   return (
     <div>
       {isSideBarToggled && (
@@ -148,7 +156,7 @@ const StudentDashboard = () => {
                 type="text"
                 className="search"
                 value={searchTerm}
-                onChange={handleSearchChange}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
 
               <div className="table">
@@ -161,25 +169,29 @@ const StudentDashboard = () => {
                       <th className="same_class">Gender</th>
                       <th className="same_class">Age</th>
                       <th className="same_class">Nationality</th>
+                      <th className="same_class">Room No</th>
                       <th className="same_class">Actions</th>
                     </tr>
                   </thead>
 
                   <tbody className="table__body">
-                    {filteredData.map((student, index) => (
+                    {filtered.map((student, index) => (
                       <tr key={index} className="table__row">
-                        <td className="same_class">{student.studentName}</td>
+                        <td className="same_class">{student.name}</td>
                         <td className="same_class">{student.email}</td>
-                        <td className="same_class">{student.id}</td>
+                        <td className="same_class">{student._id}</td>
                         <td className="same_class">{student.gender}</td>
                         <td className="same_class">{student.age}</td>
                         <td className="same_class">{student.nationality}</td>
+                        <td className="same_class">
+                          {student?.room?.roomNumber}
+                        </td>
 
                         <td className="same_class">
                           <RiDeleteBin6Line
                             size={25}
                             color="red"
-                            onClick={() => confirmDelete(student.id)}
+                            onClick={() => confirmDelete(student._id)}
                           />
                           &nbsp;&nbsp;
                           <FaPenFancy
@@ -230,7 +242,7 @@ const StudentDashboard = () => {
       {selectedModal === "UpdateStudentProfile" && (
         <UpdateStudentProfile
           student={selectedStudent}
-          updateFilteredData={updateFilteredData}
+          updateFilteredData={setFilteredData}
           onClose={handleModalClose}
         />
       )}
@@ -243,7 +255,11 @@ const StudentDashboard = () => {
       )}
 
       {selectedModal === "UpdateCheckin" && (
-        <UpdateCheckin student={selectedStudent} onClose={handleModalClose} />
+        <UpdateCheckin
+          student={selectedStudent}
+          onClose={handleModalClose}
+          currentRoomNumber={currentRoomNumber}
+        />
       )}
     </div>
   );

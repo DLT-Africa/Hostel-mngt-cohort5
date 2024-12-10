@@ -4,41 +4,46 @@ import SideBar from "./SideBar";
 import { FaBars, FaTimes } from "react-icons/fa";
 import RoomTable from "./RoomTable";
 import { confirmAlert } from "react-confirm-alert";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
-const roomsData = [
-  {
-    _id: 1,
-    roomNumber: 10,
-    roomCapacity: 5,
-    roomOccupancy: ["Ade", "Mubarak", "Chapo", "Rodiat"],
-    roomLocation: "No 5, Ado Odo",
-    roomStatus: "Available",
-  },
+const override = {
+  display: "block",
+  margin: "100px auto",
+};
 
-  {
-    _id: 2,
-    roomNumber: 20,
-    roomCapacity: 4,
-    roomOccupancy: ["Shola", "Adigun", "Tunubu", "Sakariyau"],
-    roomLocation: "No 2, Ikeshi",
-    roomStatus: "Unavailable",
-  },
-
-  {
-    _id: 3,
-    roomNumber: 30,
-    roomCapacity: 6,
-    roomOccupancy: ["Shade", "John"],
-    roomLocation: "No 3, Obasanjo",
-    roomStatus: "Available",
-  },
-];
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const Rooms = () => {
-  const [roomData, setRoomData] = useState(roomsData);
+  const [roomData, setRoomData] = useState([]);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [isSideBarToggle, setIsSideBarToggle] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/room/`, {
+          withCredentials: true,
+        });
+        const data = response.data;
+        console.log({ data });
+        setRoomData(data);
+      } catch (error) {
+        console.log(error);
+        if (error.response && error.response.status === 400) {
+          toast.error("Cannot fetch Room");
+        } else {
+          toast.error("Internal server error");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchRooms();
+  }, []);
 
   useEffect(() => {
     const filteredRooms = roomData.filter((res) => {
@@ -56,23 +61,52 @@ const Rooms = () => {
     setSearchResult(filteredRooms);
   }, [roomData, search]);
 
-  const handleAddRoom = (newRoomData) => {
-    setRoomData((prevData) => [...prevData, newRoomData]);
+  const handleAddRoom = async (newRoomData) => {
+    try {
+      await axios.post(
+        `${BASE_URL}/room/create-room`,
+        { ...newRoomData, roomNum: newRoomData.roomNumber },
+        { withCredentials: true }
+      );
+      setRoomData((prevData) => [...prevData, newRoomData]);
+      toast.success("Room added successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message);
+    }
   };
 
-  const handleUpdateRoom = (updatedRoomData) => {
-    setRoomData((prevData) =>
-      prevData.map((room) =>
-        room._id === updatedRoomData._id ? updatedRoomData : room
-      )
-    );
+  const handleUpdateRoom = async (updatedRoomData) => {
+    try {
+      await axios.patch(
+        `${BASE_URL}/room/update-room/${updatedRoomData._id}`,
+        { roomStatus: updatedRoomData.roomStatus },
+        { withCredentials: true }
+      );
+
+      setRoomData((prevData) =>
+        prevData.map((room) =>
+          room._id === updatedRoomData._id ? updatedRoomData : room
+        )
+      );
+
+      toast.success("Room updated successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message);
+    }
   };
 
   const removeRoom = async (id) => {
     try {
+      await axios.delete(`${BASE_URL}/room/${id}`, {
+        withCredentials: true,
+      });
       setRoomData((prevData) => prevData.filter((room) => room._id !== id));
+      toast.success("Room deleted successfully");
     } catch (error) {
       console.error("Failed to delete room", error);
+      toast.error("Failed to delete room");
     }
   };
 
@@ -93,6 +127,11 @@ const Rooms = () => {
       ],
     });
   };
+
+  if (isLoading)
+    return (
+      <ClipLoader color="#3a86ff" cssOverride={override} loading={isLoading} />
+    );
 
   return (
     <div>

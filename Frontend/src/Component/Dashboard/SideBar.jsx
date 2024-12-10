@@ -6,7 +6,6 @@ const dashboardLinks = [
   { title: "Dashboard", route: "/home-dash" },
   { title: "Student", route: "/student-dash" },
   { title: "Rooms", route: "/room" },
-  { title: "Report", route: "#" },
 ];
 
 const SideBar = () => {

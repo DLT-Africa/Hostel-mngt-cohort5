@@ -160,14 +160,38 @@ tbody > tr:hover {
   background-color: #fff;
 }
 
-.sidebar-toggle-iconB {
+.sidebar-toggle-icon {
   cursor: pointer;
   font-size: 50px;
   display: none;
 }
 
+
+.modal-content button {
+  margin: 10px;
+  width: 100%;
+  border-radius: 12px;
+  background: #1a6917;
+  padding: 10px;
+  font-size: 15px;
+  color: white;
+}
+
+.modal-content .one {
+  background: rgba(0, 0, 255, 0.743);
+  color: white;
+}
+.modal-content .two {
+  background: rgba(26, 130, 151, 0.743);
+  color: white;
+}
+.modal-content .three {
+  background: rgba(255, 0, 0, 0.743);
+  color: white;
+}
+
 @media (max-width: 991px) {
-  .sidebar-toggle-iconB {
+  .sidebar-toggle-icon {
     display: block;
   }
 

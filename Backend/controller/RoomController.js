@@ -85,9 +85,6 @@ const updateRoom = asyncHandler(async (req, res) => {
   const { roomNumber, roomLocation, roomOccupancy, roomStatus, roomCapacity } =
     req.body;
 
-  console.log({ roomOccupancy });
-
-  //   console.log({ originalArray });
   try {
     const room = await Room.findById(roomId);
 

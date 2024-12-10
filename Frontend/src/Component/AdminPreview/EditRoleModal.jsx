@@ -8,7 +8,7 @@ const EditRoleModal = ({ user, onUpdateRole, onClose }) => {
   };
 
   const handleSubmit = () => {
-    onUpdateRole(user.id, newRole);
+    onUpdateRole(user._id, newRole);
     onClose();
   };
 
@@ -16,7 +16,7 @@ const EditRoleModal = ({ user, onUpdateRole, onClose }) => {
     <div className="modal">
       <div className="modal-content">
         <h2 className="modal-title">Edit Role</h2>
-        <p className="user-name">User: {user.name}</p>
+        <p className="user-name">User: {user.fullname}</p>
         <label htmlFor="role" className="role-label">
           New Role:
         </label>

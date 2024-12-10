@@ -34,7 +34,7 @@ const UserTable = ({ data, onDelete, onUpdateRole }) => {
         <tbody id="__tableBody">
           {data.map((user, i) => (
             <tr key={i}>
-              <td className="__tableData __tableName">{user.name}</td>
+              <td className="__tableData __tableName">{user.fullname}</td>
               <td className="__tableData __tableEmail">{user.email}</td>
               <td className="__tableData __tableRole">
                 <p>{user.role}</p>
@@ -49,7 +49,7 @@ const UserTable = ({ data, onDelete, onUpdateRole }) => {
 
                 <button
                   className="__prevDelButton"
-                  onClick={() => onDelete(user.id)}
+                  onClick={() => onDelete(user._id)}
                 >
                   <RiDeleteBin6Line />
                 </button>

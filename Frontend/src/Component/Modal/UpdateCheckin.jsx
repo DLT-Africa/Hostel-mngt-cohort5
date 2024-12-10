@@ -1,10 +1,17 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
-const UpdateCheckin = ({ student, onClose }) => {
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+const UpdateCheckin = ({ student, onClose, currentRoomNumber }) => {
   const [action, setAction] = useState("");
   const [roomNumber, setRoomNumber] = useState("");
-  const [currentRoomNumber, setCurrentRoomNumber] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  console.log(student);
+  console.log(student?.room?.roomNumber);
 
+  // setCurrentRoomNumber(student?.room?.roomNumber);
   const handleRoomChange = (e) => {
     setRoomNumber(e.target.value);
   };
@@ -12,8 +19,30 @@ const UpdateCheckin = ({ student, onClose }) => {
     setAction(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/student/check-in-status`,
+        {
+          roomNumber: student?.room?.roomNumber,
+          action,
+          studentId: student._id,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      toast.success(res?.data?.msg);
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -29,8 +58,8 @@ const UpdateCheckin = ({ student, onClose }) => {
           <div>
             <label htmlFor="">Room Number</label>
             <input
-              type="text"
-              value={roomNumber}
+              type="number"
+              value={currentRoomNumber || roomNumber}
               onChange={handleRoomChange}
               placeholder="Enter room number"
             />
@@ -49,9 +78,10 @@ const UpdateCheckin = ({ student, onClose }) => {
             </select>
           </div>
 
-          <button type="submit">Update Status</button>
+          <button type="submit">
+            {isSubmitting ? "Updating..." : "Update Status"}
+          </button>
           <button type="button" onClick={onClose}>
-            {" "}
             Close
           </button>
         </form>

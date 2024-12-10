@@ -26,7 +26,7 @@ const register = asyncHandler(async (req, res) => {
     //check if the admin already exists
     const adminExists = await AdminModel.findOne({ email });
     if (adminExists) {
-      return res.status(400).json({message: "Email already exists"});;
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     // create a new admin in the database
@@ -56,7 +56,6 @@ const register = asyncHandler(async (req, res) => {
     res.status(500).send("Internal Server error");
   }
 });
-
 
 //Admin login
 
@@ -137,23 +136,24 @@ const getAdmins = asyncHandler(async (req, res) => {
       .select("-password");
 
     if (!admins) {
-      return res.status(404).json({ message: "No admin found" });
+      return res.status(404).json({ msg: "No admin found" });
     }
 
     res.status(200).json(admins);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server error");
+    res.status(500).json({ msg: "Internal Server error" });
   }
 });
 
 const updateAdmin = asyncHandler(async (req, res) => {
   const { adminId } = req.params;
+  console.log({adminId})
   const { role } = req.body;
   try {
     const admin = await AdminModel.findById(adminId);
     if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
+      return res.status(404).json({ msg: "Admin not found" });
     }
 
     admin.role = role;
@@ -161,7 +161,7 @@ const updateAdmin = asyncHandler(async (req, res) => {
     res.status(200).json(admin);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server error");
+    res.status(500).json({ msg: "Internal Server error" });
   }
 });
 
@@ -183,7 +183,7 @@ const deleteAdmin = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Admin deleted succesfully" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ errorMessage: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 

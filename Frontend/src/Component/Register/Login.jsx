@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { UserContext } from "../../context/userContext";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -31,7 +33,7 @@ const Login = () => {
       }
       setIsSubmitting(true);
       const response = await axios.post(
-        "http://localhost:5000/admin/login",
+        `${BASE_URL}/admin/login`,
         formData,
         { withCredentials: true }
       );

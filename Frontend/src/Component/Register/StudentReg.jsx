@@ -63,7 +63,7 @@ const StudentReg = () => {
       setIsSubmitting(true);
 
      await axios.post(
-        "http://localhost:5000/student/register-student",
+        `${BASE_URL}/student/register-student`,
         formData,
         { withCredentials: true }
       );

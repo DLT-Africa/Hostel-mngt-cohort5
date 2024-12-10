@@ -23,8 +23,6 @@ const protectAdmin = asyncHandler(async (req, res, next) => {
       }
 
       req.adminId = decoded.id;
-
-
       next();
     } catch (error) {
       console.log(error);

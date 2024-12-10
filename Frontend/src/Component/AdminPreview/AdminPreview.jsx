@@ -1,59 +1,110 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./AdminPreview.css";
 import UserTable from "./UserTable";
 import { CiSearch } from "react-icons/ci";
+import axios from "axios";
+import { ClipLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
-const userData = [
-  { name: "Opera", email: "opera12@gmail.com", role: "Admin", id: 1 },
-  { name: "Chapo", email: "chapo12@gmail.com", role: "User", id: 2 },
-  { name: "Emmy", email: "emmy12@gmail.com", role: "Member", id: 3 },
-  { name: "Roddy", email: "roddy12@gmail.com", role: "Member", id: 4 },
-  { name: "Mubby", email: "mubby@gmail.com", role: "User", id: 5 },
-  { name: "Teddy", email: "teddy@gmail.com", role: "User", id: 6 },
-];
+// const adminData = [
+//   { name: "Opera", email: "opera12@gmail.com", role: "Admin", id: 1 },
+//   { name: "Chapo", email: "chapo12@gmail.com", role: "Admin", id: 2 },
+//   { name: "Emmy", email: "emmy12@gmail.com", role: "Member", id: 3 },
+//   { name: "Roddy", email: "roddy12@gmail.com", role: "Member", id: 4 },
+//   { name: "Mubby", email: "mubby@gmail.com", role: "Admin", id: 5 },
+//   { name: "Teddy", email: "teddy@gmail.com", role: "Admin", id: 6 },
+// ];
+
+const override = {
+  display: "block",
+  margin: "100px auto",
+};
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const AdminPreview = () => {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState(userData);
-  const [filteredData, setFilteredData] = useState(userData);
+  const [admins, setAdmins] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/admin`, {
+          withCredentials: true,
+        });
+        const data = response.data;
+        setFilteredData(data);
+        setAdmins(data);
+        console.log({ data });
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data?.msg);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAdmin();
+  }, []);
 
   const handleSearchChange = (e) => {
     const term = e.target.value.toLowerCase();
     setSearch(term);
+    console.log({ term });
 
-    const filtered = users.filter(
-      (user) =>
-        user.name.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term) ||
-        user.role.toLowerCase().includes(term)
+    const filtered = admins.filter(
+      (admin) =>
+        admin.fullname.toLowerCase().includes(term) ||
+        admin.email.toLowerCase().includes(term) ||
+        admin.role.toLowerCase().includes(term)
     );
+    console.log({ filtered });
     setFilteredData(filtered);
   };
 
-  const handleDelete = (userId) => {
-    const updatedUsers = users.filter((user) => user.id !== userId);
-    setUsers(updatedUsers);
+  const handleDelete = async (adminId) => {
+    try {
+      await axios.delete(`${BASE_URL}/admin/${adminId}`, {
+        withCredentials: true,
+      });
+      const updatedFilteredData = filteredData.filter(
+        (admin) => admin._id !== adminId
+      );
 
-    const updatedFilteredData = filteredData.filter(
-      (user) => user.id !== userId
-    );
-
-    setFilteredData(updatedFilteredData);
+      setFilteredData(updatedFilteredData);
+      toast.success("Admin deleted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.msg);
+    }
   };
 
-  const handleUpdateRole = (userId, newRole) => {
-    const updatedRole = users.map((user) =>
-      user.id === userId ? { ...user, role: newRole } : user
-    );
+  const handleUpdateRole = async (adminId, newRole) => {
+    try {
+      await axios.patch(
+        `${BASE_URL}/admin/${adminId}`,
+        {
+          role: newRole,
+        },
+        { withCredentials: true }
+      );
 
-    setUsers(updatedRole);
-
-    const updatedFilteredRole = filteredData.map((user) => 
-      user.id === userId ? { ...user, role: newRole } : user
-    );
-
-    setFilteredData(updatedFilteredRole);
+      const updatedFilteredRole = filteredData.map((admin) =>
+        admin._id === adminId ? { ...admin, role: newRole } : admin
+      );
+      setFilteredData(updatedFilteredRole);
+      toast.success("Admin updated successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.msg);
+    }
   };
+
+  if (isLoading)
+    return (
+      <ClipLoader color="#3a86ff" cssOverride={override} loading={isLoading} />
+    );
 
   return (
     <div className="__prevCon">
