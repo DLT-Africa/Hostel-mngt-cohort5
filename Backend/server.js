@@ -13,7 +13,7 @@ const cookieParser = require("cookie-parser");
 const PORT = 5000;
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
+    origin: ["https://hostel-mngt-frt.vercel.app"], // process.env.FRONTEND_URL
     credentials: true,
     optionsSuccessStatus: 200,
     methods: "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS",
@@ -33,8 +33,6 @@ app.use(
 app.use("/admin", adminRoutes);
 app.use("/room", roomRoutes);
 app.use("/student", studentRoutes);
-
-
 
 app.get("/", (req, res) => console.log("Hello Teady!"));
 
